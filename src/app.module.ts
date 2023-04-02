@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { KnexModule } from '@nestjsplus/knex';
+import { JwtModule } from '@nestjs/jwt';
 import { SocialAccountModule } from './application/social-account/social-account.module';
 import { PostModule } from './application/post/post.module';
 import { AuthModule } from './application/auth/auth.module';
@@ -22,6 +23,14 @@ import { UserModule } from './application/user/user.module';
           password: configService.get('DB_PASSWORD'),
           database: configService.get('DB_NAME'),
         },
+      }),
+      inject: [ConfigService],
+    }),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: (configService) => ({
+        secret: configService.get('JWT_SECRET'),
+        signOptions: { expiresIn: configService.get('JWT_EXPIRES_IN') },
       }),
       inject: [ConfigService],
     }),
